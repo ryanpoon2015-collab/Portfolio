@@ -2463,6 +2463,19 @@
         });
       });
 
+      /* ---------- LFS MEDIA RESOLVER FOR GITHUB PAGES ---------- */
+      var GITHUB_LFS_BASE = 'https://media.githubusercontent.com/media/ryanpoon2015-collab/Portfolio/main/';
+      function resolveVideoUrl(url) {
+        if (!url) return '';
+        // If loaded over HTTP/HTTPS on GitHub Pages or custom domain, route via GitHub LFS media CDN
+        if (window.location.protocol.indexOf('http') === 0 && (window.location.hostname.includes('github.io') || window.location.hostname.includes('github.com') || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'))) {
+          var clean = url.replace(/^\.\//, '').replace(/^\//, '');
+          var encoded = clean.split('/').map(function (part) { return encodeURIComponent(part); }).join('/');
+          return GITHUB_LFS_BASE + encoded;
+        }
+        return url;
+      }
+
       /* ---------- MODAL ---------- */
       var modal = document.getElementById('videoModal');
       var modalTitle = document.getElementById('modalTitle');
@@ -2473,16 +2486,24 @@
       function openModal(data) {
         modalTitle.textContent = data.title || 'Project Title';
         modalDesc.textContent = data.desc || '';
-        // inject a real <video> element
         modalVideoWrap.innerHTML = '';
         if (data.video) {
+          var targetSrc = resolveVideoUrl(data.video);
           var vid = document.createElement('video');
-          vid.src = data.video;
           vid.controls = true;
           vid.autoplay = true;
           vid.playsInline = true;
+          vid.preload = 'auto';
           vid.style.cssText = 'width:100%;height:100%;object-fit:contain;border-radius:10px;background:#000;display:block;';
+
+          var source = document.createElement('source');
+          source.src = targetSrc;
+          source.type = 'video/mp4';
+          vid.appendChild(source);
+
           modalVideoWrap.appendChild(vid);
+          vid.load();
+          vid.play().catch(function () { });
         }
         modal.classList.add('open');
         modal.setAttribute('aria-hidden', 'false');
@@ -2516,6 +2537,10 @@
         // hover preview on thumbnail
         var preview = thumb.querySelector('video');
         if (preview) {
+          var rawSrc = preview.getAttribute('src');
+          if (rawSrc) {
+            preview.src = resolveVideoUrl(rawSrc);
+          }
           thumb.addEventListener('mouseenter', function () { preview.play().catch(function () { }); });
           thumb.addEventListener('mouseleave', function () { preview.pause(); preview.currentTime = 0; });
         }
