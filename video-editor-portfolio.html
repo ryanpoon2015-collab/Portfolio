@@ -2463,17 +2463,11 @@
         });
       });
 
-      /* ---------- LFS MEDIA RESOLVER FOR GITHUB PAGES ---------- */
-      var GITHUB_LFS_BASE = 'https://media.githubusercontent.com/media/ryanpoon2015-collab/Portfolio/main/';
+      /* ---------- DIRECT MEDIA PATH RESOLVER ---------- */
       function resolveVideoUrl(url) {
         if (!url) return '';
-        // If loaded over HTTP/HTTPS on GitHub Pages or custom domain, route via GitHub LFS media CDN
-        if (window.location.protocol.indexOf('http') === 0 && (window.location.hostname.includes('github.io') || window.location.hostname.includes('github.com') || (window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1'))) {
-          var clean = url.replace(/^\.\//, '').replace(/^\//, '');
-          var encoded = clean.split('/').map(function (part) { return encodeURIComponent(part); }).join('/');
-          return GITHUB_LFS_BASE + encoded;
-        }
-        return url;
+        var parts = url.split('/');
+        return parts.map(function (part) { return encodeURIComponent(part); }).join('/');
       }
 
       /* ---------- MODAL ---------- */
