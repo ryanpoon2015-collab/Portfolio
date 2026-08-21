@@ -869,7 +869,8 @@
       transition: opacity .4s var(--ease), transform .5s var(--ease);
     }
 
-    .work-card.hidden {
+    .work-card.hidden,
+    .more-videos-link.hidden {
       display: none;
     }
 
@@ -1027,6 +1028,76 @@
 
     .work-card__cta:hover span {
       transform: translateX(4px);
+    }
+
+    /* ── More Videos drive link banner ── */
+    .more-videos-link {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 32px 28px;
+      border-radius: var(--radius-lg);
+      border: 1px dashed var(--teal-dim);
+      background: rgba(63, 163, 156, .04);
+      text-decoration: none;
+      color: var(--ink-dim);
+      font-family: var(--ff-mono);
+      font-size: 13px;
+      letter-spacing: .04em;
+      transition: border-color .35s var(--ease), background .35s var(--ease), color .35s var(--ease), transform .35s var(--ease);
+    }
+
+    .more-videos-link:hover {
+      border-color: var(--teal-soft);
+      background: rgba(63, 163, 156, .09);
+      color: var(--ink);
+      transform: translateY(-3px);
+    }
+
+    .more-videos-link__icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(63, 163, 156, .12);
+      border: 1px solid var(--teal-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background .35s, border-color .35s;
+    }
+
+    .more-videos-link:hover .more-videos-link__icon {
+      background: rgba(63, 163, 156, .22);
+      border-color: var(--teal-soft);
+    }
+
+    .more-videos-link__icon svg {
+      width: 18px;
+      height: 18px;
+      color: var(--teal-soft);
+    }
+
+    .more-videos-link__text strong {
+      display: block;
+      font-size: 14px;
+      font-family: var(--ff-body);
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 3px;
+    }
+
+    .more-videos-link__arrow {
+      margin-left: auto;
+      font-size: 18px;
+      color: var(--teal-soft);
+      transition: transform .35s var(--ease);
+    }
+
+    .more-videos-link:hover .more-videos-link__arrow {
+      transform: translateX(5px);
     }
 
     @media (max-width:980px) {
@@ -2084,6 +2155,28 @@
           </div>
         </article>
 
+        <!-- DRIVE LINK – shown only in More Videos filter -->
+        <a
+          class="more-videos-link"
+          data-category="more"
+          href="https://drive.google.com/drive/folders/1LJWG7WKxdAmlyrHoBEF-4leASdHU-4sO?usp=sharing"
+          target="_blank"
+          rel="noopener noreferrer"
+          id="moreVideosLink"
+        >
+          <span class="more-videos-link__icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </span>
+          <span class="more-videos-link__text">
+            <strong>Click here for more</strong>
+            View the full collection on Google Drive
+          </span>
+          <span class="more-videos-link__arrow">→</span>
+        </a>
+
       </div>
     </section>
 
@@ -2451,6 +2544,7 @@
       /* ---------- FILTERS ---------- */
       var filterBtns = document.querySelectorAll('.filter');
       var workCards = document.querySelectorAll('.work-card');
+      var moreVideosLink = document.getElementById('moreVideosLink');
       filterBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
           filterBtns.forEach(function (b) { b.classList.remove('active'); });
@@ -2460,8 +2554,15 @@
             var match = (f === 'all' || card.dataset.category === f);
             card.classList.toggle('hidden', !match);
           });
+          // show the drive link only when "More Videos" or "All" is active
+          if (moreVideosLink) {
+            var showLink = (f === 'more' || f === 'all');
+            moreVideosLink.classList.toggle('hidden', !showLink);
+          }
         });
       });
+      // hide drive link on initial load (default is "all", so show it)
+      // (no action needed — it defaults visible)
 
       /* ---------- DIRECT MEDIA PATH RESOLVER ---------- */
       function resolveVideoUrl(url) {
